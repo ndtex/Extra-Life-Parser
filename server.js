@@ -45,6 +45,7 @@ switch (currentJob){
 			partyList.push("Tank #2", "Healer #1","Healer #2","DPS #1","DPS #2","DPS #3","DPS #4");
 		}
 		break;
+		//To-Do: More jobs to build out
 }
 
 //Generate random integer between the "low" and "high" values
