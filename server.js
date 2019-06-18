@@ -36,7 +36,7 @@ let partySize = 4 //current party size
 let numberOfDonors = 0 //set to current number of donors to make sure we aren't repeating things
 
 //Generate job specific lists and variables
-// TODO - Let the change on the fly
+// TODO - Let this change on the fly
 abilites = constants[currentJob].abilities
 partyList = constants[currentJob].partyList[partySize]
 
