@@ -15,10 +15,10 @@ let donorTicker = ''
 let fiftyDonation = ''
 let fiftyDonationStatus = 'Inactive'
 let abilities = [] 
-let abilityBan = 'Abilities Banned ($25): \r\n'
+let abilityBan = '\r\nAbilities Banned ($25): \r\n'
 let mechanicIntro = 'Hit Party with Mechanic ($10) x '
 let mechanicHits = 0
-let killListIntro = 'Kill Party Member ($37): \r\n'
+let killListIntro = '\r\nKill Party Member ($37): \r\n'
 let killList = ''
 let partyList = []
 
@@ -37,8 +37,9 @@ let numberOfDonors = 0 //set to current number of donors to make sure we aren't 
 
 //Generate job specific lists and variables
 // TODO - Let this change on the fly
-abilites = constants[currentJob].abilities
+abilities = constants[currentJob].abilities
 partyList = constants[currentJob].partyList[partySize]
+fiftyDonation = constants[currentJob].fiftyDonation
 
 //Generate random integer between the "low" and "high" values
 function randomIntInc(low, high) {
@@ -103,9 +104,9 @@ function updateEL() {
 			
 			//Update donor ticker text					
 			if (body[i].message != undefined) {
-				donorTicker += body[i].displayName + ': $' + body[i].amount + body[i].message + ', '
+				donorTicker += body[i].displayName + ': $' + body[i].amount + ' - ' + body[i].message + '... '
 			} else {
-				donorTicker += body[i].displayName + ': $' + body[i].amount + ', '			
+				donorTicker += body[i].displayName + ': $' + body[i].amount + '... '			
 			}
 		}
 		
