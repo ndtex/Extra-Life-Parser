@@ -3,7 +3,7 @@ const fs = require('fs')
 const constants = require('./constants.js')
 
 const participantID = 349568 //enter in specific DonorDrive ID
-//var teamID = '' -- Placeholder for now. Eventually will expand into team parsing too
+//const teamID = '' -- Placeholder for now. Eventually will expand into team parsing too
 
 const basicInfo = 'https://extra-life.org/api/participants/' + participantID
 const donorDetails = 'https://extra-life.org/api/participants/' + participantID + '/donations'
@@ -12,6 +12,7 @@ const donorDetails = 'https://extra-life.org/api/participants/' + participantID 
 let goalText = ''
 let banText = ''
 let donorTicker = ''
+let milestoneText = ''
 let fiftyDonation = ''
 let fiftyDonationStatus = 'Inactive'
 let abilities = [] 
@@ -31,12 +32,13 @@ fs.readFile('Text Output/Donor Ticker.txt', 'utf8', (err, contents) => {
 
 // Variables that are "dynamic" and need to be set before code starts/restarts
 
-let currentJob = 'PLD' //current job in game
+let currentJob = 'SCH' //current job in game
 let partySize = 4 //current party size
 let numberOfDonors = 0 //set to current number of donors to make sure we aren't repeating things
 
 //Generate job specific lists and variables
 // TODO - Let this change on the fly
+let role = constants[currentJob].role
 abilities = constants[currentJob].abilities
 partyList = constants[currentJob].partyList[partySize]
 fiftyDonation = constants[currentJob].fiftyDonation
@@ -66,6 +68,46 @@ function updateGoal() {
 
 			console.log('Goal.txt Updated')
 		})
+		
+		//Check for which donation milestone we are at
+		if (body.sumDonations <  500){
+			milestoneText = 'Next Milestone: $500\r\nAether (Cocktail)\r\n* 1.5 oz White Rum\r\n* .75 oz Everclear\r\n* .75 oz Blue Curaco\r\n* Sprite Fill'
+		} else if (body.sumDonations < 1000){
+			milestoneText = 'Next Milestone: $1,000\r\nInner Darkness (Shot)\r\n* .75 oz Dark Rum\r\n* .75 oz Jager\r\n* Dash Hot Sauce'
+		} else if (body.sumDonations < 1369){
+			milestoneText = 'Next Milestone: $1,369\r\n($10,000 All Time!)\r\n10,000 Needles (Cocktail)\r\n* 1.5 oz Peach Brandy\r\n* .5 oz Orange Juice\r\n* .Andre Rose Fill\r\n* 4 Dashes El Yucateco XXXtra Hot Habanero'
+		} else if (body.sumDonations < 1500){
+			milestoneText = 'Next Milestone: $1,500\r\nShadowbringer (Cocktail)\r\n* Aether (Cocktail):\r\n* 1.5 oz White Rum\r\n* .75 oz Everclear\r\n* .75 oz Blue Curaco\r\n* Sprite Fill\r\n+Inner Darkness (Shot):\r\n* .75 oz Dark Rum\r\n* .75 oz Jager\r\n* Dash Hot Sauce'
+		} else if (body.sumDonations < 2000){
+			milestoneText = 'Next Milestone: $2,000\r\nTriforce of Power (Shooter)\r\n* 1.5 oz Goldschlagger\r\n* .75 oz Grenadine\r\n* .75 oz Fireball\r\n* 151 Top Layer\r\n* Lit on Fire'
+		} else if (body.sumDonations < 2500){
+			milestoneText = 'Next Milestone: $2,500\r\nJager Bombchu (Double Bomb)\r\n* Shot 1: Jager\r\nShot 2: Bombchu\r\n* .75 oz Vodka\r\n* .75 oz Blue Curaco\r\n* Dropped in Red Bull'
+		} else if (body.sumDonations < 3000){
+			milestoneText = 'Next Milestone: $3,000\r\nTriforce of Wisdom (Shooter)\r\n* 1.5 oz Goldschlagger\r\n* 1.5 oz Hypnotic\r\n* Everclear Top Layer'
+		} else if (body.sumDonations < 3500){
+			milestoneText = 'Next Milestone: $3,500\r\nGanon (Cocktail)\r\n* 1 oz Khalua\r\n* 1 oz Vodka\r\n* Soda Water Fill\r\n* Float Triforce of Power (Shooter):\r\n* 1.5 oz Goldschlagger\r\n* .75 oz Grenadine\r\n* .75 oz Fireball\r\n* 151 Top Layer'
+		} else if (body.sumDonations < 4000){
+			milestoneText = 'Next Milestone: $4,000\r\nTriforce of Courage (Shooter)\r\n* 1.5 oz Goldschlagger\r\n* 1.5 oz Midori\r\n* Absnithe Top Layer'
+		} else if (body.sumDonations < 4500){
+			milestoneText = 'Next Milestone: $4,500\r\nYiga Clan (Cocktail)\r\n99 Proof Banana Schnapps\r\nFloated on Ganon (Cocktail):\r\n* 1 oz Khalua\r\n* 1 oz Vodka\r\n* Soda Water Fill\r\n* Float Triforce of Power (Shooter):\r\n* 1.5 oz Goldschlagger\r\n* .75 oz Grenadine\r\n* .75 oz Fireball\r\n* 151 Top Layer'
+		} else if (body.sumDonations < 5000){
+			milestoneText = 'Next Milestone: $5,000\r\nBlake Shelton\'s Hometown Special\r\n* 1 Can Bud Light\r\n* 1 Double Vodka Sprite\r\n* Combine in one glass\r\n* Chug in 9 seconds'
+		} else if (body.sumDonations < 5500){
+			milestoneText = 'Next Milestone: $5,500\r\nSilver Arrow Through the Heart of Ganon (Bomb)\r\n* Silver Arrow Shot:\r\n* 1.5 oz Bourbon\r\n* .75 oz Gin\r\n* Dropped in Ganon (Cocktail):\r\n* 1 oz Khalua\r\n* 1 oz Vodka\r\n* Soda Water Fill\r\n* Float Triforce of Power (Shooter):\r\n* 1.5 oz Goldschlagger\r\n* .75 oz Grenadine\r\n* .75 oz Fireball\r\n* 151 Top Layer'
+		} else if (body.sumDonations < 6000){
+			milestoneText = 'Next Milestone: $6,000\r\nThe Ultimate Power (Triple Shooter)\r\n* Combine all 3 Triforce Shooters\r\nTriforce of Power (Shooter)\r\n* 1.5 oz Goldschlagger\r\n* .75 oz Grenadine\r\n* .75 oz Fireball\r\n* 151 Top Layer\r\n* Lit on Fire\r\nTriforce of Wisdom (Shooter)\r\n* 1.5 oz Goldschlagger\r\n* 1.5 oz Hypnotic\r\n* Everclear Top Layer\r\nTriforce of Courage (Shooter)\r\n* 1.5 oz Goldschlagger\r\n* 1.5 oz Midori\r\n* Absnithe Top Layer'
+		} else {
+			milestoneText = ''
+		}
+		
+		fs.writeFile('Text Output/Milestone.txt', milestoneText, (err) => {
+			if (err) {
+				console.log(`Error when saving Milestone.txt: ${err}`)
+				return
+			}
+
+			console.log('Milestone.txt Updated')
+		})
 	})
 }
 
@@ -90,7 +132,11 @@ function updateEL() {
 		for (let i = numberOfDonors; j = body.length, i < j; i++) {
 			/******* Check donation value to determine in-game bans and actions--EVENTUALLY MAKE THIS A FUNCTION/INCLUDE??? ********/
 			if (body[i].amount >= 50) {
-				fiftyDonationStatus = 'Active'
+				if (role == 'Healer'){
+					fiftyDonationStatus = 'Active - No Healing ' + partyList[randomIntInc(0, partyList.length)]
+				}else {
+					fiftyDonationStatus = 'Active'
+				}
 			} else if (body[i].amount >= 37) {
 				killList += partyList[randomIntInc(0, partyList.length)] + '\r\n'
 			} else if (body[i].amount >= 25) {
