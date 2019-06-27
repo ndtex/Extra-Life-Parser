@@ -22,6 +22,14 @@ let mechanicHits = 0
 let killListIntro = '\r\nKill Party Member ($37): \r\n'
 let killList = ''
 let partyList = []
+let deathTaxString = ''
+
+//TODO: Make variables dyanmic and read from file & able to edit via input of some kind
+let fiftyDonationCount = 0
+let deathCount = 0
+let wipeCount = 0
+let failCount = 0
+let deathTax = 0
 
 
 //Open files that can be appended to and update varibles with current contents
@@ -132,6 +140,10 @@ function updateEL() {
 		for (let i = numberOfDonors; j = body.length, i < j; i++) {
 			/******* Check donation value to determine in-game bans and actions--EVENTUALLY MAKE THIS A FUNCTION/INCLUDE??? ********/
 			if (body[i].amount >= 50) {
+				
+				//TODO: Add stuff in here to try and stack the 50 donations because SURPRISE! IT HAPPENED!
+				
+				//Healer is a special case that needs a random party member picked
 				if (role == 'Healer'){
 					fiftyDonationStatus = 'Active - No Healing ' + partyList[randomIntInc(0, partyList.length)]
 				}else {
@@ -178,6 +190,30 @@ function updateEL() {
 		updateGoal()
 		numberOfDonors = body.length
 		console.log('Current number of donors: ' + numberOfDonors)
+	})
+}
+
+//TODO: Make this function able to be called via some kind of input
+function deathDonation(input){
+	
+	if (input == 'death'){
+		deathCount++
+	} else if (input == 'wipe'){
+		wipeCount++
+	} else if (input == 'fail'){
+		failCount++
+	}
+		   
+	deathTax = (wipeCount + killCount) * 5 + deathCount
+	deathTaxString = 'Death Tax: $' + deathTax
+	
+	fs.writeFile('Text Output/Death Tax.txt', deathTaxString, (err) => {
+		if (err) {
+			console.log(`Error when saving Death Tax.txt: ${err}`)
+			return
+		}
+
+		console.log('Death Tax.txt Updated') 
 	})
 }
 
