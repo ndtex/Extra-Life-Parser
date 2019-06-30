@@ -17,19 +17,19 @@ module.exports = {
 	PLD: {
 		abilities: ['Rampart', 'Interject', 'Shirk', 'Low Blow', 'Reprisal', 'Provoke', 'Arm\'s Length', 'Fight or Flight', 'Sheltron', 'Intervention', 'Sentinel', 'Divine Veil', 'Cover', 'Hallowed Ground', 'Passage of Arms', 'Sprits Within', 'Circle of Scorn', 'Intervene', 'Requiescat'],
 		partyList: partyInfo.tank,
-		fiftyDonation:'\r\nDrop Tank Stance ($50): \r\n',
+		fiftyDonation:'\r\nDrop Tank Stance ($50) x ',
 		role: 'Tank'
 	},
 	SCH: {
 		abilities: ['Swiftcast', 'Lucid Dreaming', 'Surecast', 'Rescue', 'Lustrate', 'Excogitation', 'Sacred Soil', 'Indomitability', 'Emergency Tactics', 'Dissipation', 'Deployment Tactics', 'Recitation', 'Chain Stratagem', 'Aetherflow', 'Summon Seraph'],
 		partyList: partyInfo.healer,
-		fiftyDonation:'\r\nStop Healing Target ($50): \r\n',
+		fiftyDonation:'\r\nStop Healing Target ($50) x ',
 		role: 'Healer'
 	},
 	DNC: {
 		abilities: ['Leg Graze', 'Second Wind', 'Foot Graze', 'Peloton', 'Head Graze', 'Arm\'s Length', 'Shield Samba', 'Flourish', 'Improvisation', 'Devilment', 'En Avant', 'Closed Position', 'Saber Dance', 'Curing Waltz'],
 		partyList: partyInfo.dps,
-		fiftyDonation: '\r\nDance in Place ($50): \r\n',
+		fiftyDonation: '\r\nDance in Place ($50) x ',
 		role: 'DPS'
 	}
 	//TODO: More jobs
