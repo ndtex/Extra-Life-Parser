@@ -13,23 +13,17 @@ let goalText = ''
 let banText = ''
 let donorTicker = ''
 let milestoneText = ''
-let fiftyDonation = ''
-let fiftyDonationStatus = 'Inactive'
+let fiftyDonationCount = 0
 let abilities = [] 
-let abilityBan = '\r\nAbilities Banned ($25): \r\n'
+let abilityBanIntro = '\r\nAbilities Banned ($25): \r\n'
+let abilityBan = ''
+let banArray = []
 let mechanicIntro = 'Hit Party with Mechanic ($10) x '
-let mechanicHits = 0
-let killListIntro = '\r\nKill Party Member ($37): \r\n'
+let mechanicHits = 0 //Need to edit on every restart as well
+let killArray = []
+let killListIntro = '\r\n\r\nKill Party Member ($37): \r\n'
 let killList = ''
 let partyList = []
-let deathTaxString = ''
-
-//TODO: Make variables dyanmic and read from file & able to edit via input of some kind
-let fiftyDonationCount = 0
-let deathCount = 0
-let wipeCount = 0
-let failCount = 0
-let deathTax = 0
 
 
 //Open files that can be appended to and update varibles with current contents
@@ -37,10 +31,14 @@ fs.readFile('Text Output/Donor Ticker.txt', 'utf8', (err, contents) => {
 	donorTicker = contents
 })
 
+fs.readFile('Text Input/Fifty Count.txt', 'utf8', (err, contents) => {
+	fiftyDonationCount = parseInt(contents,10) 
+})
+
 
 // Variables that are "dynamic" and need to be set before code starts/restarts
 
-let currentJob = 'SCH' //current job in game
+let currentJob = 'PLD' //current job in game
 let partySize = 4 //current party size
 let numberOfDonors = 0 //set to current number of donors to make sure we aren't repeating things
 
@@ -49,7 +47,8 @@ let numberOfDonors = 0 //set to current number of donors to make sure we aren't 
 let role = constants[currentJob].role
 abilities = constants[currentJob].abilities
 partyList = constants[currentJob].partyList[partySize]
-fiftyDonation = constants[currentJob].fiftyDonation
+let fiftyDonation = constants[currentJob].fiftyDonation
+let fiftyDonationStatus = fiftyDonation + fiftyDonationCount
 
 //Generate random integer between the "low" and "high" values
 function randomIntInc(low, high) {
@@ -121,6 +120,16 @@ function updateGoal() {
 
 //Main update function
 function updateEL() {
+	
+	//Check for Variable Updates (I'm so sorry for this)
+	killArray = fs.readFileSync('Text Input/Kill List.txt', 'utf8').split('\r\n')
+	killList = killArray.join('\r\n')
+	banArray = fs.readFileSync('Text Input/Ability Ban.txt', 'utf8').split('\r\n')
+	abilityBan = banArray.join('\r\n')
+	fiftyDonationCount = parseInt(fs.readFileSync('Text Input/Fifty Count.txt', 'utf8'),10)
+	fiftyDonationStatus = fiftyDonation + fiftyDonationCount
+	mechanicHits = parseInt(fs.readFileSync('Text Input/Mechanic Hits.txt', 'utf8'),10)
+	
 	//Request and process all donor details
 	request({
 		url: donorDetails,
@@ -133,32 +142,75 @@ function updateEL() {
 
 		//Check for new donations, otherwise, break out of function
 		if (numberOfDonors == body.length) {
-			console.log('No new donations')
-			return
+			console.log('No new donations. Current number of donors: ' + numberOfDonors)
+			
+			//Make sure Ban overlay is up-to-date to be safe
+			banText = mechanicIntro + mechanicHits + '\r\n' + abilityBanIntro + abilityBan + killListIntro + killList + '\r\n' + fiftyDonationStatus
+			
+			return fs.writeFile('Text Output/Bans.txt', banText, (err) => {
+			if (err) {
+					console.log(`Error when saving Bans.txt: ${err}`)
+					return
+				}
+
+				console.log('Bans.txt Updated') 
+			}) //break from function
 		}
 		
-		for (let i = numberOfDonors; j = body.length, i < j; i++) {
-			/******* Check donation value to determine in-game bans and actions--EVENTUALLY MAKE THIS A FUNCTION/INCLUDE??? ********/
+		for (let i = 0; j = body.length - numberOfDonors, i < j; i++) {
+			/******* Check donation value to determine in-game bans and actions ********/
+			//TODO - Make this section of code note a crime that relies on saving variables in .txt files 
 			if (body[i].amount >= 50) {
-				
-				//TODO: Add stuff in here to try and stack the 50 donations because SURPRISE! IT HAPPENED!
-				
-				//Healer is a special case that needs a random party member picked
 				if (role == 'Healer'){
-					fiftyDonationStatus = 'Active - No Healing ' + partyList[randomIntInc(0, partyList.length)]
+					fiftyDonationStatus = 'Active - No Healing ' + partyList[randomIntInc(0, partyList.length-1)] //TODO: Fix
 				}else {
-					fiftyDonationStatus = 'Active'
+					fiftyDonationCount++
+					fs.writeFile('Text Input/Fifty Count.txt', fiftyDonationCount, (err) => {
+						if (err) {
+							console.log(`Error when saving Fifty Count.txt: ${err}`)
+							return
+						}
+
+						console.log('Donor Ticket.txt Updated') 
+					})
+					fiftyDonationStatus = fiftyDonation + fiftyDonationCount
 				}
 			} else if (body[i].amount >= 37) {
-				killList += partyList[randomIntInc(0, partyList.length)] + '\r\n'
-			} else if (body[i].amount >= 25) {
-				abilityBan += abilities[randomIntInc(0, abilities.length)] + '\r\n'
+				killArray.push(partyList[randomIntInc(0, partyList.length-1)])
+				killList = killArray.join('\r\n')
+				fs.writeFile('Text Input/Kill List.txt', killList, (err) => {
+					if (err) {
+						console.log(`Error when saving Kill List.txt: ${err}`)
+						return
+					}
+
+					console.log('Kill List.txt Updated') 
+				})
+			} else if (body[i].amount >= 25) { 
+				banArray.push(abilities[randomIntInc(0, abilities.length-1)])
+				abilityBan = banArray.join('\r\n')
+				fs.writeFile('Text Input/Ability Ban.txt', abilityBan, (err) => {
+					if (err) {
+						console.log(`Error when saving Ability Ban.txt: ${err}`)
+						return
+					}
+
+					console.log('Ability Ban.txt Updated') 
+				})
 			} else if (body[i].amount >= 10) {
 				mechanicHits++
+				fs.writeFile('Text Input/Mechanic Hits.txt', mechanicHits, (err) => {
+					if (err) {
+						console.log(`Error when saving Mechanic Hits.txt: ${err}`)
+						return
+					}
+
+					console.log('Ability Ban.txt Updated') 
+				})
 			}
 			
 			//Update Ban/Incentive Text
-			banText = mechanicIntro + mechanicHits + '\r\n' + abilityBan + killListIntro + killList + fiftyDonation + fiftyDonationStatus //end FFXIV specific function
+			banText = mechanicIntro + mechanicHits + '\r\n' + abilityBanIntro + abilityBan + killListIntro + killList + '\r\n' + fiftyDonationStatus //end FFXIV specific function
 			
 			//Update donor ticker text					
 			if (body[i].message != undefined) {
@@ -190,30 +242,6 @@ function updateEL() {
 		updateGoal()
 		numberOfDonors = body.length
 		console.log('Current number of donors: ' + numberOfDonors)
-	})
-}
-
-//TODO: Make this function able to be called via some kind of input
-function deathDonation(input){
-	
-	if (input == 'death'){
-		deathCount++
-	} else if (input == 'wipe'){
-		wipeCount++
-	} else if (input == 'fail'){
-		failCount++
-	}
-		   
-	deathTax = (wipeCount + killCount) * 5 + deathCount
-	deathTaxString = 'Death Tax: $' + deathTax
-	
-	fs.writeFile('Text Output/Death Tax.txt', deathTaxString, (err) => {
-		if (err) {
-			console.log(`Error when saving Death Tax.txt: ${err}`)
-			return
-		}
-
-		console.log('Death Tax.txt Updated') 
 	})
 }
 
